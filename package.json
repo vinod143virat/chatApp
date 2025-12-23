@@ -5,7 +5,11 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "vercel-build": "echo Build complete"
+  },
+  "engines": {
+    "node": ">=18.x"
   },
   "keywords": [
     "chat",
