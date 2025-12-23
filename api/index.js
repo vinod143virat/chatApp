@@ -22,6 +22,28 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from uploads directory
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
+// Database connection middleware
+let dbConnected = false;
+
+const connectDB = async () => {
+  if (!dbConnected) {
+    try {
+      await database.connect();
+      dbConnected = true;
+      console.log("Database connected");
+    } catch (error) {
+      console.error("Database connection error:", error);
+      // Don't throw - let the app continue but log the error
+    }
+  }
+};
+
+// Ensure DB connection before handling requests
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
 // Request logging
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
@@ -47,28 +69,6 @@ app.use((req, res) => {
 
 // Error handler
 app.use(errorHandler);
-
-// Database connection middleware
-let dbConnected = false;
-
-const connectDB = async () => {
-  if (!dbConnected) {
-    try {
-      await database.connect();
-      dbConnected = true;
-      console.log("Database connected");
-    } catch (error) {
-      console.error("Database connection error:", error);
-      // Don't throw - let the app continue but log the error
-    }
-  }
-};
-
-// Ensure DB connection before handling requests
-app.use(async (req, res, next) => {
-  await connectDB();
-  next();
-});
 
 // Export for Vercel
 module.exports = app;
